@@ -67,6 +67,15 @@ async function dump(args: DumpArgs) {
         limit: args.limit || undefined,
         ["#c"]: ["dephy"]
     }] as unknown as Filter[]
-    const events = await pool.list(args.relays, filters)
-    return {events}
+    let events
+    let error
+    try {
+        events = await pool.list(args.relays, filters)
+    } catch (e) {
+        console.error(e, args)
+        error = e.toString()
+    } finally {
+        pool.close(args.relays)
+    }
+    return {events, error}
 }
