@@ -8,3 +8,5 @@ yarn.lock
 # Output of 'npm pack'
 *.tgz
 .wrangler
+
+.dev.vars
