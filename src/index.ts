@@ -45,12 +45,21 @@ app.get('/dump_and_pin', async c => {
         if (d.error) {
             throw new Error(d.error)
         }
+
+        const events = d.events.map(e => {
+            try {
+                return verifyEvent(e)
+            } catch (e) {
+                return null
+            }
+        }).filter(i => !!i)
+
         const cid = await pinjson(c.env.PINATA_JWT, {
             args: {
                 ...args,
                 relays: args.relays.sort()
             },
-            events: d.events
+            events
         }, {
             keyvalues: {
                 ...args,
@@ -61,7 +70,7 @@ app.get('/dump_and_pin', async c => {
             throw new Error("IPFS pin failed")
         }
         return c.json({
-            cid, args, events: d.events
+            cid, args
         })
     } catch (e) {
         return c.json({
